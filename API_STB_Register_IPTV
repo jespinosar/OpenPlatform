@@ -1,9 +1,47 @@
 swagger: '2.0'
 info:
-  title: Authenticate STB API
-  description: Authenticate STB API for OSS Telefonica Open Platform
-  version: 1.1.1
-host: api.authenticatestb.telefonica.com
+  title: Open Platform IPTV Register STB API
+  description: >
+    # Authenticate STB API for OSS Telefonica Open Platform
+
+
+    _This specification describes success scenarios and error codes
+    description._
+
+
+    The __host__(FQDN) showed in this API's base url is just an example. 
+
+    It is an OB/Country responsibility to provide the final FQDN/Host. HTTPS
+    protocol is mandatory, and a non-self signed certificate MUST be offered. A
+    list of Recognised root CAs will be provided.
+
+
+    Please notice a main goal is to be aware of the following error blocks
+
+
+    __Error blocks__:
+
+      1. STB cannot be matched with an user
+      2. A match exists but Open Platform(OP) registering failed
+      3. Internal errors. Example - DB issues
+      4. Bad parameters. Example - MAC with wrong format.
+
+
+    __Proprietary HTTP status codes__:
+
+
+    | Code | Meaning |
+
+    | ------- | -------- |
+
+    | 454   | STB not found    |
+
+    | 554   | STB/User found but register failed |
+
+
+    [More Info](mailto:javier.espinosaruiz@telefonica.com).
+  version: 1.1.2
+host: openplatform.obdmain.telefonica.com
 schemes:
   - https
 basePath: /v1
@@ -28,33 +66,43 @@ paths:
         - Stbs
       responses:
         '200':
-          description: 'Success, even if STB was already registered Code returned: Success'
+          description: >-
+            Success, even if STB was already registered Code returned: Success.
+            Message: Success
           schema:
             $ref: '#/definitions/errorModel'
         '400':
           description: >-
-            Bad request, request has bad parameters. Code returned: Malformed
-            request
+            Bad request, request has bad parameters. Permanent. Code returned:
+            Malformed request
           schema:
             $ref: '#/definitions/errorModel'
-        '404':
+        '454':
           description: >-
-            There is no user for that IP/STB data. Code returned: IP or STB
-            mac/guid/casn was not found. No user
+            There is no user for that IP/STB data. Posibly permanent.Code
+            returned: IP or STB mac/guid/casn was not found. No user
           schema:
             $ref: '#/definitions/errorModel'
         '500':
-          description: 'Internal server error. Code returned: Internal Error'
+          description: >-
+            Internal server error. Use case: some internal error prevented from
+            completing the user look-up or OP register. Temporary. Code
+            returned: Internal Error
           schema:
             $ref: '#/definitions/errorModel'
         '503':
           description: 'Temporary Server Error. Retry Later. Code returned: Retry Later'
           schema:
             $ref: '#/definitions/errorModel'
+        '554':
+          description: >-
+            A STB-User match was found, but something was wrong with OP
+            resgistering. Temporary. Code returned: STB/User match was found but
+            register failed
         default:
           description: 'Unexpected error. Code returned: Unknown error '
-        schema:
-          $ref: '#/definitions/errorModel'
+          schema:
+            $ref: '#/definitions/errorModel'
 definitions:
   stbDataBody:
     type: object
@@ -90,8 +138,9 @@ definitions:
       ipsrc:
         type: string
         description: >-
-          Optional field for proxies when source IP will be NATed. Example:
-          23.10.193.2
+          Optional field for proxies when source IP will be NATed. The STB will
+          never send this field, but it may be useful for a relay if this
+          request is resent. Example: 23.10.193.2
   errorModel:
     type: object
     required:
@@ -106,6 +155,7 @@ definitions:
           - Internal Error
           - Retry Later
           - STB not Found
+          - STB/User match was found but register failed
           - Business Logic does not allow register
           - IP or STB mac/guid/casn was not found. No user
           - Other error
@@ -114,4 +164,4 @@ definitions:
           - Malformed request
       message:
         type: string
-        description: A string with useful information
+        description: A string with useful information. 'Success' string when 200 code
