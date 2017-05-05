@@ -1,24 +1,18 @@
 swagger: '2.0'
+
 info:
   title: Open Platform IPTV Register STB API
-  description: >
+  version: "1.1.3"
+  description: |
     # Authenticate STB API for OSS Telefonica Open Platform
 
-
-    _This specification describes success scenarios and error codes
-    description._
-
-
+    _This specification describes success scenarios and error codes description._
+    
     The __host__(FQDN) showed in this API's base url is just an example. 
-
-    It is an OB/Country responsibility to provide the final FQDN/Host. HTTPS
-    protocol is mandatory, and a non-self signed certificate MUST be offered. A
-    list of Recognised root CAs will be provided.
-
-
+    It is an OB/Country responsibility to provide the final FQDN/Host. HTTPS protocol is mandatory, and a non-self signed certificate MUST be offered. A list of Recognised root CAs will be provided.
+    
     Please notice a main goal is to be aware of the following error blocks
-
-
+    
     __Error blocks__:
 
       1. STB cannot be matched with an user
@@ -26,24 +20,23 @@ info:
       3. Internal errors. Example - DB issues
       4. Bad parameters. Example - MAC with wrong format.
 
-
+  
     __Proprietary HTTP status codes__:
 
-
     | Code | Meaning |
-
     | ------- | -------- |
-
     | 454   | STB not found    |
-
     | 554   | STB/User found but register failed |
-
-
+    
     [More Info](mailto:javier.espinosaruiz@telefonica.com).
-  version: 1.1.2
+    
+  
+# the domain of the service
 host: openplatform.obdmain.telefonica.com
+# array of all schemes that your API supports
 schemes:
   - https
+# will be prefixed to all paths
 basePath: /v1
 consumes:
   - application/json
@@ -65,44 +58,34 @@ paths:
       tags:
         - Stbs
       responses:
-        '200':
-          description: >-
-            Success, even if STB was already registered Code returned: Success.
-            Message: Success
+        200:
+          description: "Success, even if STB was already registered Code returned: Success. Message: Success"
           schema:
             $ref: '#/definitions/errorModel'
-        '400':
-          description: >-
-            Bad request, request has bad parameters. Permanent. Code returned:
-            Malformed request
+        400:
+          description: "Bad request, request has bad parameters. Permanent. Code returned: Malformed request"
           schema:
             $ref: '#/definitions/errorModel'
-        '454':
-          description: >-
-            There is no user for that IP/STB data. Posibly permanent.Code
-            returned: IP or STB mac/guid/casn was not found. No user
+        454:
+          description: "There is no user for that IP/STB data. Posibly permanent.Code returned: IP or STB mac/guid/casn was not found. No user"
           schema:
             $ref: '#/definitions/errorModel'
-        '500':
-          description: >-
-            Internal server error. Use case: some internal error prevented from
-            completing the user look-up or OP register. Temporary. Code
-            returned: Internal Error
+        500:
+          description: "Internal server error. Use case: some internal error prevented from completing the user look-up or OP register. Temporary. Code returned: Internal Error"
           schema:
             $ref: '#/definitions/errorModel'
-        '503':
-          description: 'Temporary Server Error. Retry Later. Code returned: Retry Later'
+        503:
+          description: "Temporary Server Error. Retry Later. Code returned: Retry Later"
           schema:
             $ref: '#/definitions/errorModel'
-        '554':
-          description: >-
-            A STB-User match was found, but something was wrong with OP
-            resgistering. Temporary. Code returned: STB/User match was found but
-            register failed
+        554:
+          description: "A STB-User match was found, but something was wrong with OP resgistering. Temporary. Code returned: STB/User match was found but register failed"
         default:
-          description: 'Unexpected error. Code returned: Unknown error '
+          description: "Unexpected error. Code returned: Unknown error "
           schema:
-            $ref: '#/definitions/errorModel'
+            $ref: '#/definitions/errorModel'  
+
+          
 definitions:
   stbDataBody:
     type: object
@@ -116,31 +99,26 @@ definitions:
     properties:
       mac:
         type: string
-        description: 'Example: 000a959d6816'
+        description: "Example: 000a959d6816"
       serial:
         type: string
-        description: 'Example: 4CE0460D0G'
+        description: "Example: 4CE0460D0G"
       stbid:
         type: string
-        description: >-
-          GUID or CASN. Example: 5edb9664-9f28-49a6-9855-bdd998b4b369 or
-          012345678912@987654321012
+        description: "GUID or CASN. Example: 5edb9664-9f28-49a6-9855-bdd998b4b369 or 012345678912@987654321012"
       stbmodel:
         type: string
-        description: 'Example: PROTEUS-V1'
+        description: "Example: PROTEUS-V1"
       stbdevicetype:
         type: string
-        description: 'Example: 805'
+        description: "Example: 805"
       dvr:
         type: boolean
-        description: 'Example: false'
+        description: "Example: false"
         default: true
       ipsrc:
         type: string
-        description: >-
-          Optional field for proxies when source IP will be NATed. The STB will
-          never send this field, but it may be useful for a relay if this
-          request is resent. Example: 23.10.193.2
+        description: "Optional field for proxies when source IP will be NATed. The STB will never send this field, but it may be useful for a relay if this request is resent. Example: 23.10.193.2"
   errorModel:
     type: object
     required:
@@ -165,3 +143,4 @@ definitions:
       message:
         type: string
         description: A string with useful information. 'Success' string when 200 code
+        
